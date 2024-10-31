@@ -10,7 +10,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
-    .setTitle('kubide chatnpm install class-validator API')
+    .setTitle('kubide chat')
     .setDescription('kubide chat ')
     .setVersion('1.0')
     .addTag('users')
