@@ -1,31 +1,30 @@
-import { ConflictException, Injectable } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UserEntity } from "src/entities/user.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import * as bcrypt from 'bcrypt';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
+
+import { CreateUserRequest } from './dto/create-user-request.dto';
+import { CreateUserResponse } from './dto/create-user-response.dto';
 
 @Injectable()
 export class UsersService {
+	constructor(
+		@InjectRepository(UserEntity)
+		private readonly usersRepository: Repository<UserEntity>,
+	) {}
 
-    constructor(
-        @InjectRepository(UserEntity)
-        private readonly usersRepository: Repository<UserEntity>
-    ) {}
+	async createUser(createUserDto: CreateUserRequest): Promise<CreateUserResponse> {
+		try {
+			const userEntity = this.usersRepository.create(createUserDto);
+			const createdUser = await this.usersRepository.save(userEntity);
 
-    async createUser(createUserDto: CreateUserDto) {
-         try {
-            const {password, ...userData} = createUserDto;
-            const user = this.usersRepository.create({
-                ...userData,
-                password: bcrypt.hashSync(password, 10),
-            });
-            await this.usersRepository.save(user);  
-            return userData;
-        } catch (error) {
-            throw new ConflictException('Email already exists');
-        }
-               
-    }
-
+			return CreateUserResponse.create(createdUser.name, createdUser.email);
+		} catch (error) {
+			if (error?.code === '23505') {
+				throw new BadRequestException('El email ya está en uso');
+			}
+			console.log(error);
+			throw new BadRequestException('Error al crear el usuario');
+		}
+	}
 }

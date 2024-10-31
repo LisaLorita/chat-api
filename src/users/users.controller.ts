@@ -1,17 +1,19 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { CreateUserRequest } from './dto/create-user-request.dto';
+import { CreateUserResponse } from './dto/create-user-response.dto';
+import { UsersService } from './users.service';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+	constructor(private readonly usersService: UsersService) {}
 
-  @Post('register')
-  @ApiOperation({ summary: 'Register user' })
-  @ApiResponse({ status: 201, description: 'User created' })
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
-  }
+	@Post('register')
+	@ApiOperation({ summary: 'Register user' })
+	@ApiResponse({ type: CreateUserResponse, status: 201, description: 'User created' })
+	async createUser(@Body() createUserDto: CreateUserRequest): Promise<CreateUserResponse> {
+		return this.usersService.createUser(createUserDto);
+	}
 }
