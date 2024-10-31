@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "src/entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -13,8 +13,14 @@ export class UsersService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto) {
-        const user = this.usersRepository.create(createUserDto);
-        return this.usersRepository.save(user);        
+        try {
+            const user = this.usersRepository.create(createUserDto);
+            await this.usersRepository.save(user);  
+            return user;
+        } catch (error) {
+            throw new ConflictException('Email already exists');
+        }
+               
     }
 
 }
