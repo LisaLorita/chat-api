@@ -30,13 +30,13 @@ export class UserEntity {
 
     @CreateDateColumn({
         type: 'timestamp',
-        default: () => 'now'
+        default: () => 'CURRENT_TIMESTAMP',
     })
     createdAt: Date;
 
     @UpdateDateColumn({
         type: 'timestamp',
-        default: () => 'now'
+        default: () => 'CURRENT_TIMESTAMP',
     })
     updatedAt: Date;
 }
