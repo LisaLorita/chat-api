@@ -7,6 +7,8 @@ import { CreateUserRequest } from './dto/create-user-request.dto';
 import { CreateUserResponse } from './dto/create-user-response.dto';
 import { FindUserByIdRequest } from './dto/find-user-by-id-request.dto';
 import { FindUserByIdResponse } from './dto/find-user-by-id-response.dto';
+import { UpdateUserRequest } from './dto/update-user-request.dto';
+import { UpdateUserResponse } from './dto/update-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -38,5 +40,19 @@ export class UsersService {
 		}
 
 		return FindUserByIdResponse.create(user);
+	}
+
+	async updateUser(id: string, request: UpdateUserRequest): Promise<UpdateUserResponse> {
+		const user = await this.usersRepository.preload({
+			id,
+			...request,
+		});
+		if (!user) {
+			throw new NotFoundException('Usuario no encontrado');
+		}
+
+		const updatedUser = await this.usersRepository.save(user);
+
+		return UpdateUserResponse.create(updatedUser.id, updatedUser.name, updatedUser.email);
 	}
 }
