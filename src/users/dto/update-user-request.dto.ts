@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserRequest {
 	@ApiProperty()
@@ -12,12 +12,8 @@ export class UpdateUserRequest {
 	@IsEmail()
 	readonly email?: string;
 
-	constructor(name: string, email: string) {
-		this.name = name;
-		this.email = email;
-	}
-
-	static create(name?: string, email?: string): UpdateUserRequest {
-		return new UpdateUserRequest(name, email);
-	}
+	@ApiProperty()
+	@IsOptional()
+	@IsBoolean()
+	readonly isActive?: boolean;
 }
