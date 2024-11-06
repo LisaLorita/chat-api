@@ -42,6 +42,15 @@ export class UsersService {
 		return FindUserByIdResponse.create(user);
 	}
 
+	async deleteUser(id: string): Promise<void> {
+		const user = await this.usersRepository.findOne({ where: { id } });
+
+		if (!user) {
+			throw new NotFoundException('Usuario no encontrado');
+		}
+		await this.usersRepository.remove(user);
+	}
+
 	async updateUser(id: string, request: UpdateUserRequest): Promise<UpdateUserResponse> {
 		try {
 			const user = await this.usersRepository.preload({

@@ -1,3 +1,4 @@
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -28,6 +29,13 @@ export class UsersController {
 		const request = FindUserByIdRequest.create(id);
 
 		return await this.usersService.findById(request);
+	}
+
+	@Delete(':id')
+	@ApiOperation({ summary: 'Delete user by id' })
+	@ApiResponse({ status: 200, description: 'User deleted' })
+	async deleteUser(@Param('id') id: string): Promise<void> {
+		return this.usersService.deleteUser(id);
 	}
 
 	@Patch(':id')
