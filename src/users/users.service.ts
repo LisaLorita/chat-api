@@ -43,16 +43,24 @@ export class UsersService {
 	}
 
 	async updateUser(id: string, request: UpdateUserRequest): Promise<UpdateUserResponse> {
-		const user = await this.usersRepository.preload({
-			id,
-			...request,
-		});
-		if (!user) {
-			throw new NotFoundException('Usuario no encontrado');
+		try {
+			const user = await this.usersRepository.preload({
+				id,
+				...request,
+			});
+			if (!user) {
+				throw new NotFoundException('Usuario no encontrado');
+			}
+
+			const updatedUser = await this.usersRepository.save(user);
+
+			return UpdateUserResponse.create(updatedUser);
+		} catch (error) {
+			if (error?.code === '23505') {
+				throw new BadRequestException('El email ya está en uso');
+			}
+			console.log(error);
+			throw new BadRequestException('Error al actualizar el usuario');
 		}
-
-		const updatedUser = await this.usersRepository.save(user);
-
-		return UpdateUserResponse.create(updatedUser.id, updatedUser.name, updatedUser.email);
 	}
 }
