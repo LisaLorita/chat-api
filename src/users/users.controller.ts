@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserRequest } from './dto/create-user-request.dto';
 import { CreateUserResponse } from './dto/create-user-response.dto';
+import { FindUserByFilterRequest } from './dto/find-user-by-filter-request.dto';
+import { FindUserByFilterResponse } from './dto/find-user-by-filter-response.dto';
 import { FindUserByIdRequest } from './dto/find-user-by-id-request.dto';
 import { FindUserByIdResponse } from './dto/find-user-by-id-response.dto';
 import { UpdateUserRequest } from './dto/update-user-request.dto';
@@ -28,6 +30,18 @@ export class UsersController {
 		const request = FindUserByIdRequest.create(id);
 
 		return await this.usersService.findById(request);
+	}
+
+	@Get('search')
+	@ApiOperation({ summary: 'Find user by filters' })
+	@ApiResponse({
+		type: FindUserByFilterResponse,
+		isArray: true,
+		status: 200,
+		description: 'Users found by filters',
+	})
+	async findMany(@Query() filter: FindUserByFilterRequest): Promise<FindUserByFilterResponse[]> {
+		return await this.usersService.findMany(filter);
 	}
 
 	@Delete(':id')

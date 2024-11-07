@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 
 import { CreateUserRequest } from './dto/create-user-request.dto';
 import { CreateUserResponse } from './dto/create-user-response.dto';
+import { FindUserByFilterRequest } from './dto/find-user-by-filter-request.dto';
+import { FindUserByFilterResponse } from './dto/find-user-by-filter-response.dto';
 import { FindUserByIdRequest } from './dto/find-user-by-id-request.dto';
 import { FindUserByIdResponse } from './dto/find-user-by-id-response.dto';
 import { UpdateUserRequest } from './dto/update-user-request.dto';
@@ -71,5 +73,25 @@ export class UsersService {
 			console.log(error);
 			throw new BadRequestException('Error al actualizar el usuario');
 		}
+	}
+
+	async findMany(filter: FindUserByFilterRequest): Promise<FindUserByFilterResponse[]> {
+		const { name, email, isActive } = filter;
+		const query = this.usersRepository.createQueryBuilder('user');
+
+		if (name) {
+			query.andWhere('user.name ILIKE :name', { name: `%${name}%` });
+		}
+
+		if (email) {
+			query.andWhere('user.email ILIKE :email', { email: `%${email}%` });
+		}
+
+		if (isActive !== undefined) {
+			query.andWhere('user.isActive = :isActive', { isActive });
+		}
+		const users = await query.getMany();
+
+		return users.map((user) => FindUserByFilterResponse.create(user));
 	}
 }
