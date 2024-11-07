@@ -23,15 +23,6 @@ export class UsersController {
 		return this.usersService.createUser(createUserDto);
 	}
 
-	@Get(':id')
-	@ApiOperation({ summary: 'Find user by id' })
-	@ApiResponse({ type: FindUserByIdResponse, status: 200, description: 'User found' })
-	async findById(@Param('id') id: string): Promise<FindUserByIdResponse> {
-		const request = FindUserByIdRequest.create(id);
-
-		return await this.usersService.findById(request);
-	}
-
 	@Get('search')
 	@ApiOperation({ summary: 'Find user by filters' })
 	@ApiResponse({
@@ -42,6 +33,15 @@ export class UsersController {
 	})
 	async findMany(@Query() filter: FindUserByFilterRequest): Promise<FindUserByFilterResponse[]> {
 		return await this.usersService.findMany(filter);
+	}
+
+	@Get(':id')
+	@ApiOperation({ summary: 'Find user by id' })
+	@ApiResponse({ type: FindUserByIdResponse, status: 200, description: 'User found' })
+	async findById(@Param('id') id: string): Promise<FindUserByIdResponse> {
+		const request = FindUserByIdRequest.create(id);
+
+		return await this.usersService.findById(request);
 	}
 
 	@Delete(':id')
