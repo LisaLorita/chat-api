@@ -91,6 +91,9 @@ export class UsersService {
 			query.andWhere('user.isActive = :isActive', { isActive });
 		}
 		const users = await query.getMany();
+		if (users.length === 0) {
+			throw new NotFoundException('No se encontraron usuarios con los filtros especificados');
+		}
 
 		return users.map((user) => FindUserByFilterResponse.create(user));
 	}
