@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
-import { CreateUserRequest } from './dto/create-user-request.dto';
-import { CreateUserResponse } from './dto/create-user-response.dto';
-import { FindUserByIdRequest } from './dto/find-user-by-id-request.dto';
-import { FindUserByIdResponse } from './dto/find-user-by-id-response.dto';
-import { UpdateUserRequest } from './dto/update-user-request.dto';
-import { UpdateUserResponse } from './dto/update-user-response.dto';
+import { CreateUserRequest } from './dtos/create-user-request.dto';
+import { CreateUserResponse } from './dtos/create-user-response.dto';
+import { FindUserByIdRequest } from './dtos/find-user-by-id-request.dto';
+import { FindUserByIdResponse } from './dtos/find-user-by-id-response.dto';
+import { FindUsersByFilterRequest } from './dtos/find-users-by-filter-request.dto';
+import { FindUsersByFilterResponse } from './dtos/find-users-by-filter-response.dto';
+import { UpdateUserRequest } from './dtos/update-user-request.dto';
+import { UpdateUserResponse } from './dtos/update-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -71,5 +73,33 @@ export class UsersService {
 			console.log(error);
 			throw new BadRequestException('Error al actualizar el usuario');
 		}
+	}
+
+	async findMany(request: FindUsersByFilterRequest): Promise<FindUsersByFilterResponse> {
+		const { name, email, isActive } = request;
+		const query = this.usersRepository.createQueryBuilder('user');
+
+		if (name) {
+			query.andWhere('user.name ILIKE :name', { name: `%${name}%` });
+		}
+
+		if (email) {
+			query.andWhere('user.email ILIKE :email', { email: `%${email}%` });
+		}
+
+		if (isActive) {
+			query.andWhere('user.isActive = :isActive', { isActive });
+		}
+
+		const take = request.take ?? 10;
+		const page = request.page ?? 1;
+		const skip = (page - 1) * take;
+
+		query.take(take);
+		query.skip(skip);
+
+		const [data, count] = await query.getManyAndCount();
+
+		return FindUsersByFilterResponse.create(data, count);
 	}
 }

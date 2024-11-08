@@ -1,13 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { CreateUserRequest } from './dto/create-user-request.dto';
-import { CreateUserResponse } from './dto/create-user-response.dto';
-import { FindUserByIdRequest } from './dto/find-user-by-id-request.dto';
-import { FindUserByIdResponse } from './dto/find-user-by-id-response.dto';
-import { UpdateUserRequest } from './dto/update-user-request.dto';
-import { UpdateUserResponse } from './dto/update-user-response.dto';
+import { CreateUserRequest } from './dtos/create-user-request.dto';
+import { CreateUserResponse } from './dtos/create-user-response.dto';
+import { FindUserByIdRequest } from './dtos/find-user-by-id-request.dto';
+import { FindUserByIdResponse } from './dtos/find-user-by-id-response.dto';
+import { FindUsersByFilterRequest } from './dtos/find-users-by-filter-request.dto';
+import { FindUsersByFilterResponse } from './dtos/find-users-by-filter-response.dto';
+import { UpdateUserRequest } from './dtos/update-user-request.dto';
+import { UpdateUserResponse } from './dtos/update-user-response.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -15,11 +16,23 @@ import { UsersService } from './users.service';
 export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
-	@Post('register')
+	@Post()
 	@ApiOperation({ summary: 'Register user' })
 	@ApiResponse({ type: CreateUserResponse, status: 201, description: 'User created' })
 	async createUser(@Body() createUserDto: CreateUserRequest): Promise<CreateUserResponse> {
 		return this.usersService.createUser(createUserDto);
+	}
+
+	@Get()
+	@ApiOperation({ summary: 'Find user by filters' })
+	@ApiResponse({
+		type: FindUsersByFilterResponse,
+		isArray: true,
+		status: 200,
+		description: 'Users found by filters',
+	})
+	async findMany(@Query() request: FindUsersByFilterRequest): Promise<FindUsersByFilterResponse> {
+		return await this.usersService.findMany(request);
 	}
 
 	@Get(':id')

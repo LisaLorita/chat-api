@@ -8,7 +8,7 @@ async function bootstrap(): Promise<void> {
 	const app = await NestFactory.create(AppModule);
 	app.enableCors();
 	app.setGlobalPrefix('api');
-	app.useGlobalPipes(new ValidationPipe());
+	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
 	const config = new DocumentBuilder()
 		.setTitle('kubide chat')
