@@ -3,14 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
-import { CreateUserRequest } from './dto/create-user-request.dto';
-import { CreateUserResponse } from './dto/create-user-response.dto';
-import { FindUserByFilterRequest } from './dto/find-user-by-filter-request.dto';
-import { FindUserByFilterResponse } from './dto/find-user-by-filter-response.dto';
-import { FindUserByIdRequest } from './dto/find-user-by-id-request.dto';
-import { FindUserByIdResponse } from './dto/find-user-by-id-response.dto';
-import { UpdateUserRequest } from './dto/update-user-request.dto';
-import { UpdateUserResponse } from './dto/update-user-response.dto';
+import { CreateUserRequest } from './dtos/create-user-request.dto';
+import { CreateUserResponse } from './dtos/create-user-response.dto';
+import { FindUserByIdRequest } from './dtos/find-user-by-id-request.dto';
+import { FindUserByIdResponse } from './dtos/find-user-by-id-response.dto';
+import { FindUsersByFilterRequest } from './dtos/find-users-by-filter-request.dto';
+import { FindUsersByFilterResponse } from './dtos/find-users-by-filter-response.dto';
+import { UpdateUserRequest } from './dtos/update-user-request.dto';
+import { UpdateUserResponse } from './dtos/update-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -75,8 +75,8 @@ export class UsersService {
 		}
 	}
 
-	async findMany(filter: FindUserByFilterRequest): Promise<FindUserByFilterResponse[]> {
-		const { name, email, isActive } = filter;
+	async findMany(request: FindUsersByFilterRequest): Promise<FindUsersByFilterResponse> {
+		const { name, email, isActive } = request;
 		const query = this.usersRepository.createQueryBuilder('user');
 
 		if (name) {
@@ -90,11 +90,16 @@ export class UsersService {
 		if (isActive !== undefined) {
 			query.andWhere('user.isActive = :isActive', { isActive });
 		}
-		const users = await query.getMany();
-		if (users.length === 0) {
-			throw new NotFoundException('No se encontraron usuarios con los filtros especificados');
-		}
 
-		return users.map((user) => FindUserByFilterResponse.create(user));
+		const take = request.take ?? 10;
+		const page = request.page ?? 1;
+		const skip = (page - 1) * take;
+
+		query.take(take);
+		query.skip(skip);
+
+		const [data, count] = await query.getManyAndCount();
+
+		return FindUsersByFilterResponse.create(data, count);
 	}
 }
