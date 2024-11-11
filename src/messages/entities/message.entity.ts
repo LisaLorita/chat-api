@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { UserEntity } from '../../users/entities/user.entity';
 
@@ -16,14 +16,15 @@ export class MessageEntity {
 	@Column('uuid')
 	receiverId: string;
 
-	@Column()
+	@CreateDateColumn({
+		type: 'timestamp',
+		default: () => 'CURRENT_TIMESTAMP',
+	})
 	createdAt: Date;
 
 	@ManyToOne(() => UserEntity, (user) => user.sentMessages)
-	@JoinColumn({ name: 'senderId' })
 	sender: UserEntity;
 
 	@ManyToOne(() => UserEntity, (user) => user.receivedMessages)
-	@JoinColumn({ name: 'receiverId' })
 	receiver: UserEntity;
 }
