@@ -15,11 +15,11 @@ export class CheckActiveUserGuard implements CanActivate {
 		const request = context.switchToHttp().getRequest();
 		const { receiverId } = request.body;
 
-		const receiver = await this.usersRepository.findOne({
+		const activeReceiver = await this.usersRepository.findOne({
 			where: { id: receiverId, isActive: true },
 		});
 
-		if (!receiver) {
+		if (!activeReceiver) {
 			throw new BadRequestException('El usuario receiver no está activo');
 		}
 
