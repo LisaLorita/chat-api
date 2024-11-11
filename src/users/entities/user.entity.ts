@@ -4,9 +4,12 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	OneToMany,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
+
+import { MessageEntity } from '../../messages/entities/message.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -46,6 +49,12 @@ export class UserEntity {
 		default: () => 'CURRENT_TIMESTAMP',
 	})
 	updatedAt: Date;
+
+	@OneToMany(() => MessageEntity, (message) => message.sender)
+	sentMessages: MessageEntity[];
+
+	@OneToMany(() => MessageEntity, (message) => message.receiver)
+	receivedMessages: MessageEntity[];
 
 	@BeforeInsert()
 	hashPassword(): void {
