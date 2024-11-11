@@ -5,16 +5,16 @@ import { UserEntity } from '../../users/entities/user.entity';
 @Entity('message')
 export class MessageEntity {
 	@PrimaryGeneratedColumn('uuid')
-	id: number;
+	id: string;
 
 	@Column()
 	content: string;
 
 	@Column('uuid')
-	senderId: number;
+	senderId: string;
 
 	@Column('uuid')
-	receiverId: number;
+	receiverId: string;
 
 	@Column()
 	createdAt: Date;
