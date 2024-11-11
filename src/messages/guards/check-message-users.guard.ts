@@ -6,7 +6,7 @@ import { UserEntity } from '../../users/entities/user.entity';
 import { CreateMessageRequest } from '../dtos/create-message-request.dto';
 
 @Injectable()
-export class IdCheckGuard implements CanActivate {
+export class CheckMessageUsersGuard implements CanActivate {
 	constructor(
 		@InjectRepository(UserEntity)
 		private readonly usersRepository: Repository<UserEntity>,
