@@ -1,6 +1,13 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateMessageResponse {
+	@ApiProperty()
 	readonly content: string;
+
+	@ApiProperty()
 	readonly senderId: string;
+
+	@ApiProperty()
 	readonly createdAt: Date;
 
 	constructor(content: string, senderId: string, createdAt: Date) {
