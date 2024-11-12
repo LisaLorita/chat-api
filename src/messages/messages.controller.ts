@@ -9,6 +9,7 @@ import { GetSentMessagesRequest } from './dtos/get-sent-messages-request.dto';
 import { GetSentMessagesResponse } from './dtos/get-sent-messages-response.dto';
 import { CheckActiveUserGuard } from './guards/check-active-user.guard';
 import { CheckMessageUsersGuard } from './guards/check-message-users.guard';
+import { CheckUserExistsGuard } from './guards/check-user-exists.guard';
 import { MessagesService } from './messages.service';
 
 @ApiTags('messages')
@@ -25,6 +26,7 @@ export class MessagesController {
 	}
 
 	@Get('sent')
+	@UseGuards(CheckUserExistsGuard)
 	async getSentMessages(
 		@Query() request: GetSentMessagesRequest,
 	): Promise<GetSentMessagesResponse> {
@@ -32,6 +34,7 @@ export class MessagesController {
 	}
 
 	@Get('received')
+	@UseGuards(CheckUserExistsGuard)
 	async getReceivedMessages(
 		@Query() request: GetReceivedMessagesRequest,
 	): Promise<GetReceivedMessagesResponse> {
