@@ -28,43 +28,37 @@ export class MessagesService {
 		);
 	}
 
-	async getSentMessages(request: GetSentMessagesRequest): Promise<GetSentMessagesResponse> {
-		const take = request.take ?? 10;
-		const page = request.page ?? 1;
-		const skip = (page - 1) * take;
-
-		const [data, count] = await this.messageRepository.findAndCount({
-			where: { senderId: request.senderId },
-			order: { createdAt: 'DESC' },
-			take,
-			skip,
-		});
-
-		if (data.length === 0) {
-			throw new NotFoundException(`User ${request.senderId} has not sent any messages`);
-		}
-
-		return GetSentMessagesResponse.create(data, count);
+	async getSent(request: GetSentMessagesRequest): Promise<GetSentMessagesResponse> {
+		return this.getMessages(request.senderId, 'senderId', request.take, request.page);
 	}
 
-	async getReceivedMessages(
-		request: GetReceivedMessagesRequest,
-	): Promise<GetReceivedMessagesResponse> {
-		const take = request.take ?? 10;
-		const page = request.page ?? 1;
+	async getReceived(request: GetReceivedMessagesRequest): Promise<GetReceivedMessagesResponse> {
+		return this.getMessages(request.receiverId, 'receiverId', request.take, request.page);
+	}
+
+	private async getMessages(
+		userId: string,
+		userField: 'senderId' | 'receiverId',
+		take = 10,
+		page = 1,
+	): Promise<GetSentMessagesResponse | GetReceivedMessagesResponse> {
 		const skip = (page - 1) * take;
 
 		const [data, count] = await this.messageRepository.findAndCount({
-			where: { receiverId: request.receiverId },
+			where: { [userField]: userId },
 			order: { createdAt: 'DESC' },
 			take,
 			skip,
 		});
 
 		if (data.length === 0) {
-			throw new NotFoundException(`User ${request.receiverId} has not received any messages`);
+			throw new NotFoundException(
+				`User ${userId} has not ${userField === 'senderId' ? 'sent' : 'received'} any messages`,
+			);
 		}
 
-		return GetReceivedMessagesResponse.create(data, count);
+		return userField === 'senderId'
+			? GetSentMessagesResponse.create(data, count)
+			: GetReceivedMessagesResponse.create(data, count);
 	}
 }

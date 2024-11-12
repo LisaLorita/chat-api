@@ -28,13 +28,13 @@ export class MessagesController {
 	async getSentMessages(
 		@Query() request: GetSentMessagesRequest,
 	): Promise<GetSentMessagesResponse> {
-		return this.messagesService.getSentMessages(request);
+		return this.messagesService.getSent(request);
 	}
 
 	@Get('received')
 	async getReceivedMessages(
 		@Query() request: GetReceivedMessagesRequest,
 	): Promise<GetReceivedMessagesResponse> {
-		return this.messagesService.getReceivedMessages(request);
+		return this.messagesService.getReceived(request);
 	}
 }
