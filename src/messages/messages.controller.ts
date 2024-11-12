@@ -3,6 +3,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateMessageRequest } from './dtos/create-message-request.dto';
 import { CreateMessageResponse } from './dtos/create-message-response.dto';
+import { GetReceivedMessagesRequest } from './dtos/get-received-messages-request.dto';
+import { GetReceivedMessagesResponse } from './dtos/get-received-messages-response.dto';
 import { GetSentMessagesRequest } from './dtos/get-sent-messages-request.dto';
 import { GetSentMessagesResponse } from './dtos/get-sent-messages-response.dto';
 import { CheckActiveUserGuard } from './guards/check-active-user.guard';
@@ -22,10 +24,17 @@ export class MessagesController {
 		return this.messagesService.send(request);
 	}
 
-	@Get()
+	@Get('sent')
 	async getSentMessages(
 		@Query() request: GetSentMessagesRequest,
 	): Promise<GetSentMessagesResponse> {
 		return this.messagesService.getSentMessages(request);
+	}
+
+	@Get('received')
+	async getReceivedMessages(
+		@Query() request: GetReceivedMessagesRequest,
+	): Promise<GetReceivedMessagesResponse> {
+		return this.messagesService.getReceivedMessages(request);
 	}
 }

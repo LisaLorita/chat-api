@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 
 import { CreateMessageRequest } from './dtos/create-message-request.dto';
 import { CreateMessageResponse } from './dtos/create-message-response.dto';
+import { GetReceivedMessagesRequest } from './dtos/get-received-messages-request.dto';
+import { GetReceivedMessagesResponse } from './dtos/get-received-messages-response.dto';
 import { GetSentMessagesRequest } from './dtos/get-sent-messages-request.dto';
 import { GetSentMessagesResponse } from './dtos/get-sent-messages-response.dto';
 import { MessageEntity } from './entities/message.entity';
@@ -43,5 +45,26 @@ export class MessagesService {
 		}
 
 		return GetSentMessagesResponse.create(data, count);
+	}
+
+	async getReceivedMessages(
+		request: GetReceivedMessagesRequest,
+	): Promise<GetReceivedMessagesResponse> {
+		const take = request.take ?? 10;
+		const page = request.page ?? 1;
+		const skip = (page - 1) * take;
+
+		const [data, count] = await this.messageRepository.findAndCount({
+			where: { receiverId: request.receiverId },
+			order: { createdAt: 'DESC' },
+			take,
+			skip,
+		});
+
+		if (data.length === 0) {
+			throw new NotFoundException(`User ${request.receiverId} has not received any messages`);
+		}
+
+		return GetReceivedMessagesResponse.create(data, count);
 	}
 }
