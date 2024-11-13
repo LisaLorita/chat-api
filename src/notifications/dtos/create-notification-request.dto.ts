@@ -4,7 +4,7 @@ export class CreateNotificationRequest {
 	@IsUUID()
 	readonly messageId: string;
 
-	constructor(idMessage: string) {
-		this.messageId = idMessage;
+	constructor(messageId: string) {
+		this.messageId = messageId;
 	}
 }
