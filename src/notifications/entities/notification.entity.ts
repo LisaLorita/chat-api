@@ -1,4 +1,11 @@
-import { CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	JoinColumn,
+	OneToOne,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { MessageEntity } from '../../messages/entities/message.entity';
 
@@ -6,6 +13,9 @@ import { MessageEntity } from '../../messages/entities/message.entity';
 export class NotificationEntity {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
+
+	@Column()
+	messageId: string;
 
 	@OneToOne(() => MessageEntity, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'messageId' })
@@ -16,4 +26,12 @@ export class NotificationEntity {
 		default: () => 'CURRENT_TIMESTAMP',
 	})
 	createdAt: Date;
+
+	constructor(messageId: string) {
+		this.messageId = messageId;
+	}
+
+	static create(messageId: string): NotificationEntity {
+		return new NotificationEntity(messageId);
+	}
 }
