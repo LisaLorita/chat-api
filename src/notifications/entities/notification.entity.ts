@@ -1,12 +1,15 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+import { MessageEntity } from '../../messages/entities/message.entity';
 
 @Entity('notification')
 export class NotificationEntity {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
-	@Column('uuid')
-	idMessage: string;
+	@OneToOne(() => MessageEntity, { onDelete: 'CASCADE' })
+	@JoinColumn({ name: 'messageId' })
+	message: MessageEntity;
 
 	@CreateDateColumn({
 		type: 'timestamp',
