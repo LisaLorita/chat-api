@@ -7,4 +7,8 @@ export class CreateNotificationRequest {
 	constructor(messageId: string) {
 		this.messageId = messageId;
 	}
+
+	static create(messageId: string): CreateNotificationRequest {
+		return new CreateNotificationRequest(messageId);
+	}
 }
