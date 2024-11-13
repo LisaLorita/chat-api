@@ -10,6 +10,6 @@ import { MessagesService } from './messages.service';
 	imports: [TypeOrmModule.forFeature([MessageEntity]), UsersModule],
 	controllers: [MessagesController],
 	providers: [MessagesService],
-	exports: [],
+	exports: [MessagesService],
 })
 export class MessagesModule {}

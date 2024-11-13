@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -9,17 +10,21 @@ import { GetReceivedMessagesResponse } from './dtos/get-received-messages-respon
 import { GetSentMessagesRequest } from './dtos/get-sent-messages-request.dto';
 import { GetSentMessagesResponse } from './dtos/get-sent-messages-response.dto';
 import { MessageEntity } from './entities/message.entity';
+import { MessageCreatedEvent } from './events/message-created.event';
 
 @Injectable()
 export class MessagesService {
 	constructor(
 		@InjectRepository(MessageEntity)
 		private readonly messageRepository: Repository<MessageEntity>,
+		private readonly eventEmitter: EventEmitter2,
 	) {}
 
 	async send(request: CreateMessageRequest): Promise<CreateMessageResponse> {
 		const message = this.messageRepository.create(request);
 		const savedMessage = await this.messageRepository.save(message);
+
+		this.eventEmitter.emit('message.created', new MessageCreatedEvent(savedMessage.id));
 
 		return CreateMessageResponse.create(
 			savedMessage.content,
