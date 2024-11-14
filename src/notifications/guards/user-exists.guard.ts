@@ -13,13 +13,13 @@ export class UserExistsGuard implements CanActivate {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const request = context.switchToHttp().getRequest();
-		const userId = request.params.userId; // Obtenemos el `userId` de los parámetros de la URL
+		const userId = request.params.userId;
 
 		const user = await this.usersRepository.findOne({ where: { id: userId } });
 		if (!user) {
 			throw new NotFoundException(`User with ID ${userId} not found`);
 		}
 
-		return true; // Permite el acceso si el usuario existe
+		return true;
 	}
 }
