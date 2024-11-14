@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { MessagesModule } from './messages/messages.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { UsersModule } from './users/users.module';
@@ -28,6 +29,7 @@ dotenv.config();
 		UsersModule,
 		MessagesModule,
 		NotificationsModule,
+		AuthModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
