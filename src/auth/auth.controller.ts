@@ -1,9 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
+import { AuthUser } from './decorators/auth-user.decorator';
 import { AuthenticatedUser } from './dtos/authenticated-user.dto';
-import { LoginUserRequest } from './dtos/login-user-request.dto';
+import { CreateUserJwtResponse } from './dtos/create-user-jwt-response.dto';
+import { LocalGuard } from './guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,11 +24,9 @@ export class AuthController {
 		},
 	})
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(LocalGuard)
 	@Post('login')
-	async login(@Body() request: LoginUserRequest): Promise<{
-		authenticatedUser: AuthenticatedUser;
-		accessToken: string;
-	}> {
-		return this.authService.login(request);
+	async login(@AuthUser() authUser: AuthenticatedUser): Promise<CreateUserJwtResponse> {
+		return this.authService.createJwt(authUser);
 	}
 }
