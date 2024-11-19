@@ -21,7 +21,8 @@ export class AuthService {
 	async login(request: LoginUserRequest): Promise<CreateUserJwtResponse> {
 		const { password, email } = request;
 		const user = await this.getUser(email);
-		if (!(await bcrypt.compare(password, user.password))) {
+		const isAuthenticatedPassword = await bcrypt.compare(password, user.password);
+		if (!isAuthenticatedPassword) {
 			throw new UnauthorizedException('invalid credentials');
 		}
 		const authenticatedUser = AuthenticatedUser.create(user);
