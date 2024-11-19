@@ -1,10 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
 
-import { UserEntity } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import { AuthenticatedUser } from './dtos/authenticated-user.dto';
 import { CreateUserJwtResponse } from './dtos/create-user-jwt-response.dto';
 import { LoginUserRequest } from './dtos/login-user-request.dto';
@@ -13,14 +11,13 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 @Injectable()
 export class AuthService {
 	constructor(
-		@InjectRepository(UserEntity)
-		private readonly usersRepository: Repository<UserEntity>,
 		private readonly jwtService: JwtService,
+		private readonly usersService: UsersService,
 	) {}
 
 	async login(request: LoginUserRequest): Promise<CreateUserJwtResponse> {
 		const { password, email } = request;
-		const user = await this.getUser(email);
+		const user = await this.usersService.findByEmail({ email });
 		const isAuthenticatedPassword = await bcrypt.compare(password, user.password);
 		if (!isAuthenticatedPassword) {
 			throw new UnauthorizedException('invalid credentials');
@@ -30,18 +27,6 @@ export class AuthService {
 		const refreshToken = this.generateToken({ id: user.id }, '1h');
 
 		return CreateUserJwtResponse.create(authenticatedUser, accessToken, refreshToken);
-	}
-
-	private async getUser(email: string): Promise<UserEntity> {
-		const user = await this.usersRepository.findOne({
-			where: { email },
-			select: ['id', 'name', 'email', 'password'],
-		});
-		if (!user) {
-			throw new UnauthorizedException('Usuario no encontrado');
-		}
-
-		return user;
 	}
 
 	private generateToken(payload: JwtPayload, expiresIn: string): string {

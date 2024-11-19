@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { UserEntity } from '../../users/entities/user.entity';
+import { FindUserByEmailResponse } from '../../users/dtos/find-by-email-response.dto';
 
 export class AuthenticatedUser {
 	@ApiProperty()
@@ -19,13 +19,13 @@ export class AuthenticatedUser {
 	@IsString()
 	email: string;
 
-	constructor(user: UserEntity) {
+	constructor(user: FindUserByEmailResponse) {
 		this.id = user.id;
 		this.name = user.name;
 		this.email = user.email;
 	}
 
-	static create(user: UserEntity): AuthenticatedUser {
+	static create(user: FindUserByEmailResponse): AuthenticatedUser {
 		return new AuthenticatedUser(user);
 	}
 }
