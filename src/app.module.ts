@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { MessagesModule } from './messages/messages.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { UsersModule } from './users/users.module';
@@ -14,6 +16,7 @@ dotenv.config();
 @Module({
 	imports: [
 		EventEmitterModule.forRoot(),
+		ConfigModule.forRoot({ isGlobal: true }),
 		TypeOrmModule.forRoot({
 			type: 'postgres',
 			host: process.env.DB_HOST,
@@ -28,6 +31,7 @@ dotenv.config();
 		UsersModule,
 		MessagesModule,
 		NotificationsModule,
+		AuthModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
