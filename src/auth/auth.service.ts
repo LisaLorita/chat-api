@@ -1,11 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 
 import { UserEntity } from '../users/entities/user.entity';
 import { AuthenticatedUser } from './dtos/authenticated-user.dto';
+import { CreateUserJwtResponse } from './dtos/create-user-jwt-response.dto';
 import { LoginUserRequest } from './dtos/login-user-request.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
@@ -17,18 +18,17 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 	) {}
 
-	async login(
-		request: LoginUserRequest,
-	): Promise<{ authenticatedUser: AuthenticatedUser; accessToken: string }> {
+	async login(request: LoginUserRequest): Promise<CreateUserJwtResponse> {
 		const { password, email } = request;
 		const user = await this.getUser(email);
 		if (!(await bcrypt.compare(password, user.password))) {
 			throw new UnauthorizedException('invalid credentials');
 		}
 		const authenticatedUser = AuthenticatedUser.create(user);
-		const accessToken = this.generateToken({ id: user.id });
+		const accessToken = this.generateToken({ id: user.id }, '5m');
+		const refreshToken = this.generateToken({ id: user.id }, '1h');
 
-		return { authenticatedUser, accessToken };
+		return CreateUserJwtResponse.create(authenticatedUser, accessToken, refreshToken);
 	}
 
 	private async getUser(email: string): Promise<UserEntity> {
@@ -43,9 +43,9 @@ export class AuthService {
 		return user;
 	}
 
-	private generateToken(payload: JwtPayload): string {
-		const accessToken = this.jwtService.sign(payload);
+	private generateToken(payload: JwtPayload, expiresIn: string): string {
+		const options = { expiresIn } as JwtSignOptions;
 
-		return accessToken;
+		return this.jwtService.sign(payload, options);
 	}
 }
