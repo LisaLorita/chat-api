@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 
 import { CreateUserRequest } from './dtos/create-user-request.dto';
 import { CreateUserResponse } from './dtos/create-user-response.dto';
+import { FindUserByEmailRequest } from './dtos/find-by-email-request.dto';
+import { FindUserByEmailResponse } from './dtos/find-by-email-response.dto';
 import { FindUserByIdRequest } from './dtos/find-user-by-id-request.dto';
 import { FindUserByIdResponse } from './dtos/find-user-by-id-response.dto';
 import { FindUsersByFilterRequest } from './dtos/find-users-by-filter-request.dto';
@@ -42,6 +44,16 @@ export class UsersService {
 		}
 
 		return FindUserByIdResponse.create(user);
+	}
+
+	async findByEmail(request: FindUserByEmailRequest): Promise<FindUserByEmailResponse> {
+		const { email } = request;
+		const user = await this.usersRepository.findOne({ where: { email } });
+		if (!user) {
+			throw new NotFoundException('Usuario no encontrado');
+		}
+
+		return FindUserByEmailResponse.create(user);
 	}
 
 	async deleteUser(id: string): Promise<void> {
