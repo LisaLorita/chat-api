@@ -14,20 +14,6 @@ export class AuthService {
 		private readonly usersService: UsersService,
 	) {}
 
-	// async login(request: LoginUserRequest): Promise<CreateUserJwtResponse> {
-	// 	const { password, email } = request;
-	// 	const user = await this.usersService.findByEmail({ email });
-	// 	const isAuthenticatedPassword = await bcrypt.compare(password, user.password);
-	// 	if (!isAuthenticatedPassword) {
-	// 		throw new UnauthorizedException('invalid credentials');
-	// 	}
-	// 	const authenticatedUser = AuthenticatedUser.create(user);
-	// 	const accessToken = this.generateToken({ id: user.id }, '5m');
-	// 	const refreshToken = this.generateToken({ id: user.id }, '1h');
-
-	// 	return CreateUserJwtResponse.create(authenticatedUser, accessToken, refreshToken);
-	// }
-
 	async createJwt(authenticatedUser: AuthenticatedUser): Promise<CreateUserJwtResponse> {
 		const accessToken = this.generateToken({ id: authenticatedUser.id }, '5m');
 		const refreshToken = this.generateToken({ id: authenticatedUser.id }, '1h');
