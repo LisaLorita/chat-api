@@ -8,6 +8,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
@@ -23,7 +24,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 		}),
 	],
 	controllers: [AuthController],
-	providers: [AuthService, LocalStrategy],
+	providers: [AuthService, LocalStrategy, JwtStrategy],
 	exports: [TypeOrmModule, AuthService, JwtModule],
 })
 export class AuthModule {}
