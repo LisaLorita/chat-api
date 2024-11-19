@@ -1,6 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
+	Query,
+	UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CreateUserRequest } from './dtos/create-user-request.dto';
 import { CreateUserResponse } from './dtos/create-user-response.dto';
 import { FindUserByIdRequest } from './dtos/find-user-by-id-request.dto';
@@ -24,6 +35,7 @@ export class UsersController {
 	}
 
 	@Get()
+	@UseGuards(JwtGuard)
 	@ApiOperation({ summary: 'Find user by filters' })
 	@ApiResponse({
 		type: FindUsersByFilterResponse,
@@ -36,6 +48,7 @@ export class UsersController {
 	}
 
 	@Get(':id')
+	@UseGuards(JwtGuard)
 	@ApiOperation({ summary: 'Find user by id' })
 	@ApiResponse({ type: FindUserByIdResponse, status: 200, description: 'User found' })
 	async findById(@Param('id') id: string): Promise<FindUserByIdResponse> {
@@ -45,6 +58,7 @@ export class UsersController {
 	}
 
 	@Delete(':id')
+	@UseGuards(JwtGuard)
 	@ApiOperation({ summary: 'Delete user by id' })
 	@ApiResponse({ status: 200, description: 'User deleted' })
 	async deleteUser(@Param('id') id: string): Promise<void> {
@@ -52,6 +66,7 @@ export class UsersController {
 	}
 
 	@Patch(':id')
+	@UseGuards(JwtGuard)
 	@ApiOperation({ summary: 'Update user by id' })
 	@ApiResponse({ type: UpdateUserRequest, status: 200, description: 'User updated' })
 	async updateUser(
