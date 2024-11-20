@@ -13,7 +13,7 @@ import { NotificationsService } from './notifications.service';
 export class NotificationsController {
 	constructor(private readonly notificationsService: NotificationsService) {}
 
-	@Get(':id')
+	@Get(':userId')
 	@UseGuards(JwtGuard, CheckOwnerGuard, UserExistsGuard)
 	@ApiOperation({ summary: 'Get user notifications' })
 	@ApiResponse({ type: GetNotificationsResponse, status: 201, description: 'Notification getted' })

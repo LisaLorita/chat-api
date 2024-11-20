@@ -32,14 +32,14 @@ export class NotificationsService {
 		const skip = (page - 1) * take;
 
 		const [data, count] = await this.notificationsRepository.findAndCount({
-			where: { message: { receiverId: request.id } },
+			where: { message: { receiverId: request.userId } },
 			order: { createdAt: 'DESC' },
 			take,
 			skip,
 		});
 
 		if (data.length === 0) {
-			throw new NotFoundException(`User ${request.id} has not received any notifications`);
+			throw new NotFoundException(`User ${request.userId} has not received any notifications`);
 		}
 
 		return GetNotificationsResponse.create(data, count);

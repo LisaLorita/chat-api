@@ -10,6 +10,7 @@ export class CheckOwnerGuard implements CanActivate {
 		const authUserId = request.authUser.id;
 		const ownerId =
 			request.params.id ||
+			request.params.userId ||
 			request.body.senderId ||
 			request.query.senderId ||
 			request.query.receiverId;

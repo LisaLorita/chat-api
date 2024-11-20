@@ -4,7 +4,7 @@ import { IsOptional, IsUUID } from 'class-validator';
 export class GetNotificationsRequest {
 	@ApiProperty()
 	@IsUUID()
-	readonly id: string;
+	readonly userId: string;
 
 	@ApiProperty()
 	@IsOptional()
