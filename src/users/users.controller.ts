@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { CheckOwnerGuard } from '../auth/guards/check-owner.guard';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CreateUserRequest } from './dtos/create-user-request.dto';
 import { CreateUserResponse } from './dtos/create-user-response.dto';
@@ -66,7 +67,7 @@ export class UsersController {
 	}
 
 	@Patch(':id')
-	@UseGuards(JwtGuard)
+	@UseGuards(JwtGuard, CheckOwnerGuard)
 	@ApiOperation({ summary: 'Update user by id' })
 	@ApiResponse({ type: UpdateUserRequest, status: 200, description: 'User updated' })
 	async updateUser(
