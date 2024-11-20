@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { CheckOwnerGuard } from '../auth/guards/check-owner.guard';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CreateMessageRequest } from './dtos/create-message-request.dto';
 import { CreateMessageResponse } from './dtos/create-message-response.dto';
@@ -27,7 +28,7 @@ export class MessagesController {
 	}
 
 	@Get('sent')
-	@UseGuards(JwtGuard, CheckUserExistsGuard)
+	@UseGuards(JwtGuard, CheckOwnerGuard, CheckUserExistsGuard)
 	async getSentMessages(
 		@Query() request: GetSentMessagesRequest,
 	): Promise<GetSentMessagesResponse> {
@@ -35,7 +36,7 @@ export class MessagesController {
 	}
 
 	@Get('received')
-	@UseGuards(JwtGuard, CheckUserExistsGuard)
+	@UseGuards(JwtGuard, CheckOwnerGuard, CheckUserExistsGuard)
 	async getReceivedMessages(
 		@Query() request: GetReceivedMessagesRequest,
 	): Promise<GetReceivedMessagesResponse> {
