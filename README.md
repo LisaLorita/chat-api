@@ -24,7 +24,19 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project is a RESTful API built with NestJS that enables secure messaging between users.
+It includes user management, authentication with JWT, messaging, and notifications, ensuring that only active users can send and receive messages.
+The API follows a modular architecture with proper guards for security, data validation, and role-based access.
+
+🔹 Technologies Used
+
+  - NestJS – API development framework
+
+  - TypeORM – Database management
+
+  - Relational Database (PostgreSQL)
+
+  - JWT – Authentication and authorization
 
 ## Project setup
 
